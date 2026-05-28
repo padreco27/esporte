@@ -1,0 +1,23 @@
+import Navbar from './components/Navbar'
+import Hero from './components/Hero'
+import Countdown from './components/Countdown'
+import About from './components/About'
+import Atividades from './components/Atividades'
+import Inscricao from './components/Inscricao'
+import Footer from './components/Footer'
+
+function App() {
+  return (
+    <>
+      <Navbar />
+      <Hero />
+      <Countdown />
+      <About />
+      <Atividades />
+      <Inscricao />
+      <Footer />
+    </>
+  )
+}
+
+export default App

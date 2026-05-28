@@ -1,0 +1,37 @@
+.footer {
+  background: var(--green-dark);
+  padding: 3rem 2rem 1.5rem;
+  text-align: center;
+}
+
+.footer-logo {
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.footer-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: var(--white);
+  margin-bottom: 0.5rem;
+}
+
+.footer-subtitle {
+  font-size: 0.85rem;
+  color: var(--gold-light);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+}
+
+.footer-divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  margin: 1.5rem auto;
+  max-width: 400px;
+}
+
+.footer-copy {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.4);
+}
