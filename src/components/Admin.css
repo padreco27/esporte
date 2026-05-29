@@ -319,3 +319,35 @@
     min-width: 100%;
   }
 }
+
+/* Estilos para inputs de PIX e QR Code */
+.admin-card input[type="number"],
+.admin-card input[type="file"] {
+  background: #fdfdf9;
+  border: 1px solid rgba(26, 58, 31, 0.16);
+  color: var(--text-dark);
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.admin-card input[type="number"]:focus,
+.admin-card input[type="file"]:focus {
+  outline: none;
+  border-color: var(--green-dark);
+  box-shadow: 0 0 0 3px rgba(26, 58, 31, 0.08);
+}
+
+.admin-card input[type="file"]::file-selector-button {
+  background: var(--green-dark);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-right: 0.8rem;
+  transition: background 0.3s;
+}
+
+.admin-card input[type="file"]::file-selector-button:hover {
+  background: var(--green-mid);
+}

@@ -14,22 +14,26 @@ create table if not exists public.inscricoes (
 );
 
 -- Habilita Row Level Security (RLS) para proteger a tabela.
-alter table public.inscricoes enable row level security;
+-- DESABILITAR RLS: se houver problemas com políticas, desabilite com:
+alter table public.inscricoes disable row level security;
 
--- Permite inserção anônima do formulário da página.
-create policy "Allow anonymous inserts" on public.inscricoes
-  for insert
-  with check (auth.role() = 'anon');
+-- Abaixo estão as políticas (mantidas como referência, mas não serão usadas)
+-- Se precisar reabilitar RLS no futuro, descomente a linha abaixo e comente a linha "disable"
+-- alter table public.inscricoes enable row level security;
 
--- Permite seleção apenas para usuários autenticados no Admin.
-create policy "Allow authenticated selects" on public.inscricoes
-  for select
-  using (auth.role() = 'authenticated');
+-- Remove todas as políticas antigas
+drop policy if exists "Allow anonymous inserts" on public.inscricoes;
+drop policy if exists "Allow authenticated selects" on public.inscricoes;
+drop policy if exists "Allow authenticated inserts" on public.inscricoes;
+drop policy if exists "Allow inserts from form" on public.inscricoes;
+drop policy if exists "Enable insert for all" on public.inscricoes;
+drop policy if exists "Enable read for authenticated users" on public.inscricoes;
 
--- Permite inserção também para usuários autenticados, caso haja necessidade.
-create policy "Allow authenticated inserts" on public.inscricoes
-  for insert
-  with check (auth.role() = 'authenticated');
-
--- Opcional: se quiser que admins vejam as inscrições no painel sem restrição,
--- mantenha as políticas acima e configure os usuários corretamente.
+-- Caso você queira reabilitar RLS no futuro, descomente as políticas abaixo
+-- create policy "Enable insert for all" on public.inscricoes
+--   for insert
+--   with check (true);
+--
+-- create policy "Enable read for authenticated users" on public.inscricoes
+--   for select
+--   using (auth.role() = 'authenticated');

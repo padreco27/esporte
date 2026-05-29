@@ -29,6 +29,14 @@ export default function Inscricao({ onSubmit }) {
   }, [])
 
   useEffect(() => {
+    if (!supabase) {
+      console.error('❌ Supabase não inicializado. Variáveis de ambiente podem estar faltando.')
+    } else {
+      console.log('✓ Supabase está disponível para inscrições')
+    }
+  }, [])
+
+  useEffect(() => {
     if (!dataNascimento) return
     const birth = new Date(dataNascimento)
     const today = new Date()
@@ -89,7 +97,11 @@ export default function Inscricao({ onSubmit }) {
       .select()
 
     if (error) {
-      setErrorMessage('Não foi possível salvar a inscrição no Supabase. Verifique a conexão e tente novamente.')
+      console.error('Erro ao salvar inscrição no Supabase:', error)
+      const errorMsg = error.message || 'Erro desconhecido'
+      const errorCode = error.code || ''
+      const detailedMessage = `Erro: ${errorMsg}${errorCode ? ` (${errorCode})` : ''}`
+      setErrorMessage(`Não foi possível salvar a inscrição. ${detailedMessage}`)
       setSuccessMessage('')
       setSubmitting(false)
       return

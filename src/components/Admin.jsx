@@ -11,6 +11,9 @@ export default function Admin({ onBack, submissions = [] }) {
   const [submissionsState, setSubmissionsState] = useState(submissions)
   const [loadingSubmissions, setLoadingSubmissions] = useState(false)
   const [fetchError, setFetchError] = useState('')
+  const [pixValue, setPixValue] = useState(20)
+  const [qrCodeImage, setQrCodeImage] = useState(null)
+  const [qrCodePreview, setQrCodePreview] = useState('')
 
   useEffect(() => {
     console.log('Supabase object:', supabase)
@@ -107,6 +110,18 @@ export default function Admin({ onBack, submissions = [] }) {
     setLoading(false)
   }
 
+  const handleQrCodeUpload = (event) => {
+    const file = event.target.files[0]
+    if (file) {
+      setQrCodeImage(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setQrCodePreview(reader.result)
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
   const handleSignOut = async () => {
     if (supabase) await supabase.auth.signOut()
     setUser(null)
@@ -199,9 +214,67 @@ export default function Admin({ onBack, submissions = [] }) {
           <div className="admin-grid admin-payments-grid">
             <article className="admin-card">
               <h2>Pagamento por PIX</h2>
-              <p>Use a chave abaixo para confirmar o pagamento de R$ 20,00.</p>
+              <p>Use a chave abaixo para confirmar o pagamento.</p>
+              
+              <label htmlFor="pix-value" style={{ display: 'block', marginTop: '15px', marginBottom: '5px', fontWeight: 'bold' }}>
+                Valor do PIX (R$):
+              </label>
+              <input
+                id="pix-value"
+                type="number"
+                value={pixValue}
+                onChange={(e) => setPixValue(Math.max(0, parseFloat(e.target.value) || 0))}
+                step="0.01"
+                min="0"
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  borderRadius: '4px',
+                  border: '1px solid #ddd',
+                  fontSize: '16px',
+                  marginBottom: '15px',
+                }}
+              />
+              
               <div className="pix-key-box">paroquiaparaopeba@diocesedesetelagoas.com.br</div>
-              <div className="pix-qr-placeholder">QR CODE</div>
+              
+              <label htmlFor="qr-code-upload" style={{ display: 'block', marginTop: '15px', marginBottom: '8px', fontWeight: 'bold' }}>
+                QR Code (Clique para escolher imagem):
+              </label>
+              <input
+                id="qr-code-upload"
+                type="file"
+                accept="image/*"
+                onChange={handleQrCodeUpload}
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  borderRadius: '4px',
+                  border: '1px solid #ddd',
+                  marginBottom: '15px',
+                  cursor: 'pointer',
+                }}
+              />
+              {qrCodePreview && (
+                <div style={{ marginTop: '15px', textAlign: 'center' }}>
+                  <img
+                    src={qrCodePreview}
+                    alt="QR Code Preview"
+                    style={{
+                      maxWidth: '200px',
+                      maxHeight: '200px',
+                      borderRadius: '8px',
+                      border: '2px solid #ddd',
+                    }}
+                  />
+                  <p style={{ fontSize: '14px', color: '#666', marginTop: '8px' }}>
+                    {qrCodeImage?.name}
+                  </p>
+                </div>
+              )}
+              {!qrCodePreview && (
+                <div className="pix-qr-placeholder">Nenhuma imagem de QR Code anexada</div>
+              )}
             </article>
 
             <article className="admin-card">
