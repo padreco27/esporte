@@ -193,6 +193,29 @@
   }
 }
 
+.admin-confirmed {
+  max-width: 1120px;
+  margin: 1.5rem auto;
+  background: white;
+  border: 1px solid rgba(26, 58, 31, 0.08);
+  border-radius: 28px;
+  padding: 1.8rem;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
+}
+
+.admin-confirmed .admin-listing-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.admin-confirmed h2 {
+  margin: 0;
+}
+
 @media (max-width: 680px) {
   .admin-page {
     padding: 8rem 1.2rem 3rem;
@@ -200,5 +223,99 @@
 
   .admin-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+.admin-payments-grid {
+  margin-top: 1.5rem;
+}
+
+.pix-key-box {
+  margin-top: 1rem;
+  padding: 1rem 1.2rem;
+  background: #fbfbf6;
+  border: 1px solid rgba(26, 58, 31, 0.12);
+  border-radius: 18px;
+  font-weight: 700;
+  color: var(--green-dark);
+}
+
+.pix-qr-placeholder {
+  min-height: 180px;
+  margin-top: 1rem;
+  border-radius: 20px;
+  border: 2px dashed rgba(26, 58, 31, 0.18);
+  display: grid;
+  place-items: center;
+  color: rgba(26, 58, 31, 0.6);
+  background: #fbfbf9;
+  font-weight: 700;
+}
+
+.admin-listing {
+  max-width: 1120px;
+  margin: 2.5rem auto 0;
+  padding: 2rem;
+  background: white;
+  border-radius: 28px;
+  border: 1px solid rgba(26, 58, 31, 0.08);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.08);
+}
+
+.admin-listing-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-listing-header h2 {
+  color: var(--green-dark);
+  margin: 0;
+}
+
+.admin-listing-header p {
+  color: var(--text-mid);
+  margin: 0;
+}
+
+.admin-table-wrapper {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 1rem 0.9rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(26, 58, 31, 0.08);
+  color: var(--text-dark);
+}
+
+.admin-table th {
+  background: rgba(212, 168, 67, 0.08);
+  color: var(--green-dark);
+  font-weight: 700;
+}
+
+.admin-table tr:hover {
+  background: rgba(235, 244, 237, 0.8);
+}
+
+.admin-empty {
+  color: var(--text-mid);
+  padding: 1rem 0;
+}
+
+@media (max-width: 980px) {
+  .admin-table {
+    min-width: 100%;
   }
 }

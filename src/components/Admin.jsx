@@ -2,12 +2,15 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import './Admin.css'
 
-export default function Admin({ onBack }) {
+export default function Admin({ onBack, submissions = [] }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+  const [submissionsState, setSubmissionsState] = useState(submissions)
+  const [loadingSubmissions, setLoadingSubmissions] = useState(false)
+  const [fetchError, setFetchError] = useState('')
 
   useEffect(() => {
     console.log('Supabase object:', supabase)
@@ -40,6 +43,42 @@ export default function Admin({ onBack }) {
       subscription?.unsubscribe()
     }
   }, [])
+
+  useEffect(() => {
+    if (!user || !supabase) return
+
+    const loadSubmissions = async () => {
+      setLoadingSubmissions(true)
+      const { data, error } = await supabase
+        .from('inscricoes')
+        .select('*')
+        .order('submitted_at', { ascending: false })
+
+      if (error) {
+        setFetchError('Não foi possível carregar as inscrições do Supabase.')
+        setLoadingSubmissions(false)
+        return
+      }
+
+      setSubmissionsState(
+        data.map((item) => ({
+          id: item.id,
+          nome: item.nome,
+          dataNascimento: item.data_nascimento,
+          idade: item.idade,
+          telefone: item.telefone,
+          participacaoConfirmada: item.participacao_confirmada,
+          paymentMethod: item.payment_method,
+          termsAccepted: item.termos_aceitos,
+          submittedAt: item.submitted_at,
+        }))
+      )
+      setFetchError('')
+      setLoadingSubmissions(false)
+    }
+
+    loadSubmissions()
+  }, [user])
 
   const handleSignIn = async (event) => {
     event.preventDefault()
@@ -74,6 +113,10 @@ export default function Admin({ onBack }) {
     setMessage('Sessão encerrada.')
   }
 
+  const totalSubmissions = submissionsState.length
+  const pixCount = submissionsState.filter((item) => item.paymentMethod === 'PIX').length
+  const onDayCount = submissionsState.filter((item) => item.paymentMethod === 'No dia').length
+
   return (
     <section className="admin-page">
       <div className="admin-hero">
@@ -82,7 +125,7 @@ export default function Admin({ onBack }) {
           <h1>{user ? 'Bem-vindo ao painel administrativo' : 'Acesse com seu e-mail e senha'}</h1>
           <p>
             {user
-              ? 'Acompanhe inscrições, ajuste detalhes do evento e mantenha tudo pronto para a próxima caminhada.'
+              ? 'Acompanhe inscrições, pagamentos e confirme participantes direto no painel administrativo.'
               : 'Use seu usuário do Supabase para acessar as informações administrativas do evento.'}
           </p>
           <div className="admin-hero-actions">
@@ -132,28 +175,119 @@ export default function Admin({ onBack }) {
           </div>
         </div>
       ) : (
-        <div className="admin-grid">
-          <article className="admin-card">
-            <h2>Inscrições</h2>
-            <p>Visualize o número de participantes e confirme presença de forma rápida.</p>
-            <div className="admin-stat">232 inscritos</div>
-            <button type="button">Ver inscrições</button>
-          </article>
+        <>
+          <div className="admin-grid">
+            <article className="admin-card">
+              <h2>Total de inscrições</h2>
+              <p>Lista com todas as inscrições realizadas no site e enviadas para o WhatsApp.</p>
+              <div className="admin-stat">{totalSubmissions} inscritos</div>
+            </article>
 
-          <article className="admin-card">
-            <h2>Atividades</h2>
-            <p>Atualize horários, trilhas e conteúdos das atividades para garantir o melhor fluxo.</p>
-            <div className="admin-stat">5 atividades programadas</div>
-            <button type="button">Editar atividades</button>
-          </article>
+            <article className="admin-card">
+              <h2>Pagou por PIX</h2>
+              <p>Inscrições que marcaram pagamento via PIX.</p>
+              <div className="admin-stat">{pixCount} registros</div>
+            </article>
 
-          <article className="admin-card">
-            <h2>Configurações</h2>
-            <p>Gerencie informações do evento, cores e chamadas rápidas para o público.</p>
-            <div className="admin-stat">Tema verde e dourado</div>
-            <button type="button">Ajustar detalhes</button>
-          </article>
-        </div>
+            <article className="admin-card">
+              <h2>Pagamento no dia</h2>
+              <p>Inscrições que escolhem pagar presencialmente no evento.</p>
+              <div className="admin-stat">{onDayCount} registros</div>
+            </article>
+          </div>
+
+          <div className="admin-grid admin-payments-grid">
+            <article className="admin-card">
+              <h2>Pagamento por PIX</h2>
+              <p>Use a chave abaixo para confirmar o pagamento de R$ 20,00.</p>
+              <div className="pix-key-box">paroquiaparaopeba@diocesedesetelagoas.com.br</div>
+              <div className="pix-qr-placeholder">QR CODE</div>
+            </article>
+
+            <article className="admin-card">
+              <h2>Pagamento no dia</h2>
+              <p>O participante poderá pagar no dia da corrida e apresentar o comprovante ou confirmar com a equipe.</p>
+              <div className="admin-stat">Pagamento presencial disponível</div>
+            </article>
+          </div>
+
+          <div className="admin-confirmed">
+            <div className="admin-listing-header">
+              <h2>Confirmados para o percurso</h2>
+              <p>Lista de pessoas que confirmaram presença no percurso de 5 km.</p>
+            </div>
+            {submissionsState.filter((item) => item.participacaoConfirmada).length === 0 ? (
+              <p className="admin-empty">Ainda não há confirmados para o percurso.</p>
+            ) : (
+              <div className="admin-table-wrapper">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Nome</th>
+                      <th>Telefone</th>
+                      <th>Status de pagamento</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {submissionsState
+                      .filter((item) => item.participacaoConfirmada)
+                      .map((item) => (
+                        <tr key={`confirmado-${item.id}`}>
+                          <td>{item.nome}</td>
+                          <td>{item.telefone}</td>
+                          <td>{item.paymentMethod === 'PIX' ? 'Pago por PIX' : 'Paga no dia'}</td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          <div className="admin-listing">
+            <div className="admin-listing-header">
+              <h2>Inscrições recentes</h2>
+              <p>As inscrições aparecem aqui assim que são enviadas pelo formulário do site.</p>
+            </div>
+
+            {loadingSubmissions ? (
+              <p className="admin-empty">Carregando inscrições do Supabase...</p>
+            ) : fetchError ? (
+              <p className="admin-empty">{fetchError}</p>
+            ) : submissionsState.length === 0 ? (
+              <p className="admin-empty">Nenhuma inscrição encontrada ainda.</p>
+            ) : (
+              <div className="admin-table-wrapper">
+                <table className="admin-table">
+                  <thead>
+                    <tr>
+                      <th>Nome</th>
+                      <th>Data Nasc.</th>
+                      <th>Idade</th>
+                      <th>Telefone</th>
+                      <th>Percurso</th>
+                      <th>Pagamento</th>
+                      <th>Enviado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {submissionsState.map((item) => (
+                      <tr key={item.id}>
+                        <td>{item.nome}</td>
+                        <td>{item.dataNascimento}</td>
+                        <td>{item.idade}</td>
+                        <td>{item.telefone}</td>
+                        <td>{item.participacaoConfirmada ? 'Sim' : 'Não'}</td>
+                        <td>{item.paymentMethod}</td>
+                        <td>{new Date(item.submittedAt).toLocaleString('pt-BR')}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </>
       )}
     </section>
   )
