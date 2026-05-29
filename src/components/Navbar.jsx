@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './Navbar.css'
 
-export default function Navbar() {
+export default function Navbar({ onAdminClick }) {
   const [scrolled, setScrolled] = useState(false)
 
   useEffect(() => {
@@ -23,6 +23,9 @@ export default function Navbar() {
         <li><a href="#atividades">Atividades</a></li>
         <li><a href="#inscricao" className="nav-cta">Inscreva-se</a></li>
       </ul>
+      <button type="button" className="nav-admin" onClick={onAdminClick} aria-label="Abrir painel administrativo">
+        <span className="nav-admin-icon">⚙️</span>
+      </button>
     </nav>
   )
 }

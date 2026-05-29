@@ -67,6 +67,29 @@
   transform: scale(1.05);
 }
 
+.nav-admin {
+  margin-left: 1rem;
+  border: none;
+  background: rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.95);
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.nav-admin:hover {
+  background: rgba(255,255,255,0.18);
+  transform: scale(1.05);
+}
+
+.nav-admin-icon {
+  font-size: 1.1rem;
+}
+
 @media (max-width: 768px) {
   .nav-links { display: none; }
 }
