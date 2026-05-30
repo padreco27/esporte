@@ -2,6 +2,24 @@ import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabaseClient'
 import './Inscricao.css'
 
+const formatarTelefone = (valor) => {
+  const numeros = valor.replace(/\D/g, "");
+
+  if (numeros.length <= 2) {
+    return `(${numeros}`;
+  }
+
+  if (numeros.length <= 7) {
+    return `(${numeros.slice(0, 2)}) ${numeros.slice(2)}`;
+  }
+
+  if (numeros.length <= 11) {
+    return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7)}`;
+  }
+
+  return `(${numeros.slice(0, 2)}) ${numeros.slice(2, 7)}-${numeros.slice(7, 11)}`;
+};
+
 export default function Inscricao({ onSubmit }) {
   const revealRefs = useRef([])
   const [nome, setNome] = useState('')
@@ -191,10 +209,11 @@ export default function Inscricao({ onSubmit }) {
                   type="date"
                   value={dataNascimento}
                   onChange={(e) => setDataNascimento(e.target.value)}
+                  placeholder="dd/mm/aaaa"
                   required
                 />
               </label>
-
+              
               <label>
                 Idade*
                 <input
@@ -207,12 +226,13 @@ export default function Inscricao({ onSubmit }) {
                 />
               </label>
 
-              <label>
+             <label>
                 Número de telefone*
                 <input
                   type="tel"
+                  id="telefone"
                   value={telefone}
-                  onChange={(e) => setTelefone(e.target.value)}
+                  onChange={(e) => setTelefone(formatarTelefone(e.target.value))}
                   placeholder="(31) 99999-9999"
                   required
                 />
@@ -282,7 +302,7 @@ export default function Inscricao({ onSubmit }) {
                 checked={termsAccepted}
                 onChange={(e) => setTermsAccepted(e.target.checked)}
               />
-              Eu entendo que precisarei pagar R$ 20,00 no ato da inscrição através de PIX e no dia levar 1 litro de leite.
+              Eu entendo que precisarei pagar R$30,00 no ato da inscrição através de PIX e no dia levar 1 litro de leite.
             </label>
 
             <button type="submit" className="inscricao-submit" disabled={submitting}>

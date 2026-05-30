@@ -141,7 +141,8 @@ export default function Admin({ onBack, submissions = [] }) {
           <p>
             {user
               ? 'Acompanhe inscrições, pagamentos e confirme participantes direto no painel administrativo.'
-              : 'Use seu usuário do Supabase para acessar as informações administrativas do evento.'}
+              : 'Use seu usuário do administrativo para acessar as informações administrativas do evento.'
+              }
           </p>
           <div className="admin-hero-actions">
             {user ? (

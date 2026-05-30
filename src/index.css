@@ -19,6 +19,11 @@
   --text-light: #6b6b6b;
 }
 
+html,
+body {
+  overflow-x: hidden;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -27,7 +32,6 @@ body {
   font-family: 'Outfit', sans-serif;
   background: var(--cream);
   color: var(--text-dark);
-  overflow-x: hidden;
 }
 
 @keyframes fadeInDown {

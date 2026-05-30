@@ -115,13 +115,15 @@
 
 .pix-copy-row {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr minmax(120px, auto);
   gap: 0.75rem;
   margin: 0.75rem 0 0.5rem;
+  min-width: 0;
 }
 
 .pix-copy-input {
   width: 100%;
+  min-width: 0;
   padding: 0.95rem 1rem;
   border-radius: 18px;
   border: 1px solid rgba(26, 58, 31, 0.16);
@@ -174,6 +176,8 @@
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.2s, background 0.3s;
+  display: block;
+  margin-inline: auto;
 }
 
 .inscricao-submit:hover {

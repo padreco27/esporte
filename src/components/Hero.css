@@ -12,11 +12,11 @@
   inset: 0;
   background-size: cover;
   background-position: center;
-  transform: scale(1.05);
+  transform: scale(1);
   transition: transform 8s ease;
 }
 
-.hero:hover .hero-bg { transform: scale(1.0); }
+.hero:hover .hero-bg { transform: scale(1); }
 
 .hero-overlay {
   position: absolute;
@@ -103,6 +103,12 @@
   justify-content: center;
   flex-wrap: wrap;
   animation: fadeInUp 0.8s ease 0.65s both;
+}
+
+.hero-btns a {
+  flex: 1 1 min(260px, 100%);
+  max-width: 320px;
+  text-align: center;
 }
 
 .btn-primary {
