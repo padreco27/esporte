@@ -12,8 +12,20 @@ export default function Admin({ onBack, submissions = [] }) {
   const [loadingSubmissions, setLoadingSubmissions] = useState(false)
   const [fetchError, setFetchError] = useState('')
   const [pixValue, setPixValue] = useState(20)
+  const [pixKey, setPixKey] = useState('paroquiaparaopeba@diocesedesetelagoas.com.br')
   const [qrCodeImage, setQrCodeImage] = useState(null)
   const [qrCodePreview, setQrCodePreview] = useState('')
+  const [walkingOptionText, setWalkingOptionText] = useState(
+    'Eu participarei da CAMINHADA DA PADROEIRA com percurso de 5 km saindo da praça da Paróquia, indo até o Flona e voltando à praça da Paróquia.'
+  )
+  const [runningOptionText, setRunningOptionText] = useState(
+    'Eu participarei da CORRIDA DA PADROEIRA de 100 metros com largada e chegada na praça da Paróquia.'
+  )
+  const [termsText, setTermsText] = useState(
+    'Eu entendo que precisarei pagar R$30,00 no ato da inscrição através de PIX e no dia levar 1 litro de leite.'
+  )
+  const [savingSettings, setSavingSettings] = useState(false)
+  const [settingsMessage, setSettingsMessage] = useState('')
 
   useEffect(() => {
     console.log('Supabase object:', supabase)
@@ -70,7 +82,7 @@ export default function Admin({ onBack, submissions = [] }) {
           dataNascimento: item.data_nascimento,
           idade: item.idade,
           telefone: item.telefone,
-          participacaoConfirmada: item.participacao_confirmada,
+          modalidade: item.modalidade || 'N/D',
           paymentMethod: item.payment_method,
           termsAccepted: item.termos_aceitos,
           submittedAt: item.submitted_at,
@@ -80,7 +92,28 @@ export default function Admin({ onBack, submissions = [] }) {
       setLoadingSubmissions(false)
     }
 
+    const loadSettings = async () => {
+      const { data, error } = await supabase
+        .from('configuracoes')
+        .select('key, value')
+        .in('key', ['walkingOptionText', 'runningOptionText', 'termsText', 'qrCodeData', 'pixKey'])
+
+      if (error) {
+        console.warn('Não foi possível carregar as configurações do ADM:', error)
+        return
+      }
+
+      data?.forEach((item) => {
+        if (item.key === 'walkingOptionText') setWalkingOptionText(item.value)
+        if (item.key === 'runningOptionText') setRunningOptionText(item.value)
+        if (item.key === 'termsText') setTermsText(item.value)
+        if (item.key === 'qrCodeData') setQrCodePreview(item.value)
+        if (item.key === 'pixKey') setPixKey(item.value)
+      })
+    }
+
     loadSubmissions()
+    loadSettings()
   }, [user])
 
   const handleSignIn = async (event) => {
@@ -110,13 +143,26 @@ export default function Admin({ onBack, submissions = [] }) {
     setLoading(false)
   }
 
-  const handleQrCodeUpload = (event) => {
+  const handleQrCodeUpload = async (event) => {
     const file = event.target.files[0]
-    if (file) {
+    if (file && supabase) {
       setQrCodeImage(file)
       const reader = new FileReader()
-      reader.onloadend = () => {
-        setQrCodePreview(reader.result)
+      reader.onloadend = async () => {
+        const base64Data = reader.result
+        setQrCodePreview(base64Data)
+
+        // Salvar no Supabase
+        const { error } = await supabase
+          .from('configuracoes')
+          .upsert(
+            { key: 'qrCodeData', value: base64Data },
+            { onConflict: 'key' }
+          )
+
+        if (error) {
+          console.error('Erro ao salvar QR Code:', error)
+        }
       }
       reader.readAsDataURL(file)
     }
@@ -126,6 +172,39 @@ export default function Admin({ onBack, submissions = [] }) {
     if (supabase) await supabase.auth.signOut()
     setUser(null)
     setMessage('Sessão encerrada.')
+  }
+
+  const handleSaveSettings = async () => {
+    if (!supabase) {
+      setSettingsMessage('Supabase não configurado. Não foi possível salvar as configurações.')
+      return
+    }
+
+    setSavingSettings(true)
+    setSettingsMessage('')
+
+    const settingsToSave = [
+      { key: 'walkingOptionText', value: walkingOptionText },
+      { key: 'runningOptionText', value: runningOptionText },
+      { key: 'termsText', value: termsText },
+      { key: 'pixKey', value: pixKey },
+    ]
+
+    if (qrCodePreview) {
+      settingsToSave.push({ key: 'qrCodeData', value: qrCodePreview })
+    }
+
+    const { error } = await supabase
+      .from('configuracoes')
+      .upsert(settingsToSave, { onConflict: 'key' })
+
+    if (error) {
+      setSettingsMessage(`Erro ao salvar as configurações: ${error.message}`)
+    } else {
+      setSettingsMessage('Configurações salvas com sucesso.')
+    }
+
+    setSavingSettings(false)
   }
 
   const totalSubmissions = submissionsState.length
@@ -141,7 +220,7 @@ export default function Admin({ onBack, submissions = [] }) {
           <p>
             {user
               ? 'Acompanhe inscrições, pagamentos e confirme participantes direto no painel administrativo.'
-              : 'Use seu usuário do administrativo para acessar as informações administrativas do evento.'
+              : 'Use seu usuário do administrativo para acessar as informações e configurações da pagina.'
               }
           </p>
           <div className="admin-hero-actions">
@@ -160,209 +239,217 @@ export default function Admin({ onBack, submissions = [] }) {
 
       {message && <div className="admin-error">{message}</div>}
 
-      {!user ? (
-        <div className="admin-login-panel">
-          <div className="admin-login-card">
-            <form onSubmit={handleSignIn} className="admin-login-form">
-              <label htmlFor="admin-email">E-mail</label>
-              <input
-                id="admin-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="seu@email.com"
-                required
-              />
+      <div className="admin-content">
+        {!user ? (
+          <div className="admin-login-panel">
+            <div className="admin-login-card admin-card--elevated">
+              <h2>Entrar no painel ADM</h2>
+              <p>Use suas credenciais para acessar o painel administrativo.</p>
+              <form onSubmit={handleSignIn} className="admin-login-form">
+                <label htmlFor="admin-email">E-mail</label>
+                <input
+                  id="admin-email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="seu@email.com"
+                  required
+                  className="admin-input"
+                />
 
-              <label htmlFor="admin-password">Senha</label>
-              <input
-                id="admin-password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Senha segura"
-                required
-              />
+                <label htmlFor="admin-password">Senha</label>
+                <input
+                  id="admin-password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Senha segura"
+                  required
+                  className="admin-input"
+                />
 
-              <button type="submit" className="admin-login-button" disabled={loading}>
-                {loading ? 'Entrando...' : 'Entrar'}
-              </button>
-            </form>
+                <button type="submit" className="admin-save-button admin-full-width" disabled={loading}>
+                  {loading ? 'Entrando...' : 'Entrar'}
+                </button>
+              </form>
+            </div>
           </div>
-        </div>
-      ) : (
-        <>
-          <div className="admin-grid">
-            <article className="admin-card">
-              <h2>Total de inscrições</h2>
-              <p>Lista com todas as inscrições realizadas no site e enviadas para o WhatsApp.</p>
-              <div className="admin-stat">{totalSubmissions} inscritos</div>
-            </article>
+        ) : (
+          <>
+            <section className="admin-section admin-summary-section">
+              <div className="admin-stats-grid">
+                <article className="admin-card stats-card">
+                  <span className="admin-card-label">Total de inscrições</span>
+                  <div className="admin-stat large">{totalSubmissions}</div>
+                  <p>Inscrições recebidas pelo site e enviadas ao WhatsApp.</p>
+                </article>
 
-            <article className="admin-card">
-              <h2>Pagou por PIX</h2>
-              <p>Inscrições que marcaram pagamento via PIX.</p>
-              <div className="admin-stat">{pixCount} registros</div>
-            </article>
+                <article className="admin-card stats-card stats-card--accent">
+                  <span className="admin-card-label">Pagou por PIX</span>
+                  <div className="admin-stat large">{pixCount}</div>
+                  <p>Participantes que escolheram o pagamento via PIX.</p>
+                </article>
 
-            <article className="admin-card">
-              <h2>Pagamento no dia</h2>
-              <p>Inscrições que escolhem pagar presencialmente no evento.</p>
-              <div className="admin-stat">{onDayCount} registros</div>
-            </article>
-          </div>
+                <article className="admin-card stats-card stats-card--accent-light">
+                  <span className="admin-card-label">Pagamento no dia</span>
+                  <div className="admin-stat large">{onDayCount}</div>
+                  <p>Participantes que pagarão diretamente no evento.</p>
+                </article>
+              </div>
+            </section>
 
-          <div className="admin-grid admin-payments-grid">
-            <article className="admin-card">
-              <h2>Pagamento por PIX</h2>
-              <p>Use a chave abaixo para confirmar o pagamento.</p>
-              
-              <label htmlFor="pix-value" style={{ display: 'block', marginTop: '15px', marginBottom: '5px', fontWeight: 'bold' }}>
-                Valor do PIX (R$):
-              </label>
-              <input
-                id="pix-value"
-                type="number"
-                value={pixValue}
-                onChange={(e) => setPixValue(Math.max(0, parseFloat(e.target.value) || 0))}
-                step="0.01"
-                min="0"
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  borderRadius: '4px',
-                  border: '1px solid #ddd',
-                  fontSize: '16px',
-                  marginBottom: '15px',
-                }}
-              />
-              
-              <div className="pix-key-box">paroquiaparaopeba@diocesedesetelagoas.com.br</div>
-              
-              <label htmlFor="qr-code-upload" style={{ display: 'block', marginTop: '15px', marginBottom: '8px', fontWeight: 'bold' }}>
-                QR Code (Clique para escolher imagem):
-              </label>
-              <input
-                id="qr-code-upload"
-                type="file"
-                accept="image/*"
-                onChange={handleQrCodeUpload}
-                style={{
-                  width: '100%',
-                  padding: '8px',
-                  borderRadius: '4px',
-                  border: '1px solid #ddd',
-                  marginBottom: '15px',
-                  cursor: 'pointer',
-                }}
-              />
-              {qrCodePreview && (
-                <div style={{ marginTop: '15px', textAlign: 'center' }}>
-                  <img
-                    src={qrCodePreview}
-                    alt="QR Code Preview"
-                    style={{
-                      maxWidth: '200px',
-                      maxHeight: '200px',
-                      borderRadius: '8px',
-                      border: '2px solid #ddd',
-                    }}
-                  />
-                  <p style={{ fontSize: '14px', color: '#666', marginTop: '8px' }}>
-                    {qrCodeImage?.name}
-                  </p>
+            <section className="admin-section admin-panel-grid">
+              <article className="admin-card admin-panel-card admin-card--wide">
+                <div className="admin-card-header">
+                  <h2>Pagamento por PIX</h2>
+                  <p>Atualize o valor e o QR Code que aparecem no formulário.</p>
                 </div>
-              )}
-              {!qrCodePreview && (
-                <div className="pix-qr-placeholder">Nenhuma imagem de QR Code anexada</div>
-              )}
-            </article>
 
-            <article className="admin-card">
-              <h2>Pagamento no dia</h2>
-              <p>O participante poderá pagar no dia da corrida e apresentar o comprovante ou confirmar com a equipe.</p>
-              <div className="admin-stat">Pagamento presencial disponível</div>
-            </article>
-          </div>
+                <div className="admin-field-group">
+                  <label htmlFor="pix-value">Valor do PIX (R$)</label>
+                  <input
+                    id="pix-value"
+                    type="number"
+                    value={pixValue}
+                    onChange={(e) => setPixValue(Math.max(0, parseFloat(e.target.value) || 0))}
+                    step="0.01"
+                    min="0"
+                    className="admin-input"
+                  />
+                </div>
 
-          <div className="admin-confirmed">
-            <div className="admin-listing-header">
-              <h2>Confirmados para o percurso</h2>
-              <p>Lista de pessoas que confirmaram presença no percurso de 5 km.</p>
-            </div>
-            {submissionsState.filter((item) => item.participacaoConfirmada).length === 0 ? (
-              <p className="admin-empty">Ainda não há confirmados para o percurso.</p>
-            ) : (
-              <div className="admin-table-wrapper">
-                <table className="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Nome</th>
-                      <th>Telefone</th>
-                      <th>Status de pagamento</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {submissionsState
-                      .filter((item) => item.participacaoConfirmada)
-                      .map((item) => (
-                        <tr key={`confirmado-${item.id}`}>
-                          <td>{item.nome}</td>
-                          <td>{item.telefone}</td>
-                          <td>{item.paymentMethod === 'PIX' ? 'Pago por PIX' : 'Paga no dia'}</td>
+                <div className="admin-field-group">
+                  <label htmlFor="pix-key">Chave PIX (CPF, telefone, email ou aleatória)</label>
+                  <input
+                    id="pix-key"
+                    type="text"
+                    value={pixKey}
+                    onChange={(e) => setPixKey(e.target.value)}
+                    placeholder="Chave PIX..."
+                    className="admin-input"
+                  />
+                </div>
+
+                <div className="admin-field-group">
+                  <label htmlFor="qr-code-upload">QR Code do PIX</label>
+                  <input
+                    id="qr-code-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleQrCodeUpload}
+                    className="admin-file-input"
+                  />
+                </div>
+
+                {qrCodePreview ? (
+                  <div className="admin-qr-preview">
+                    <img src={qrCodePreview} alt="QR Code Preview" className="admin-qr-image" />
+                    <p className="admin-qr-meta">{qrCodeImage?.name}</p>
+                  </div>
+                ) : (
+                  <div className="pix-qr-placeholder">Nenhuma imagem de QR Code anexada</div>
+                )}
+              </article>
+
+              <article className="admin-card admin-panel-card admin-card--wide">
+                <div className="admin-card-header">
+                  <h2>Textos do formulário</h2>
+                  <p>Mude o texto exibido nas opções de modalidade e no termo de inscrição.</p>
+                </div>
+
+                <div className="admin-field-group">
+                  <label htmlFor="walking-option">Texto da opção CAMINHADA</label>
+                  <textarea
+                    id="walking-option"
+                    value={walkingOptionText}
+                    onChange={(e) => setWalkingOptionText(e.target.value)}
+                    rows={4}
+                    className="admin-textarea"
+                  />
+                </div>
+
+                <div className="admin-field-group">
+                  <label htmlFor="running-option">Texto da opção CORRIDA</label>
+                  <textarea
+                    id="running-option"
+                    value={runningOptionText}
+                    onChange={(e) => setRunningOptionText(e.target.value)}
+                    rows={4}
+                    className="admin-textarea"
+                  />
+                </div>
+
+                <div className="admin-field-group">
+                  <label htmlFor="terms-text">Texto do termo de inscrição</label>
+                  <textarea
+                    id="terms-text"
+                    value={termsText}
+                    onChange={(e) => setTermsText(e.target.value)}
+                    rows={3}
+                    className="admin-textarea"
+                  />
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleSaveSettings}
+                  disabled={savingSettings}
+                  className="admin-save-button"
+                >
+                  {savingSettings ? 'Salvando...' : 'Salvar alterações'}
+                </button>
+                {settingsMessage && (
+                  <p className="admin-settings-message">{settingsMessage}</p>
+                )}
+              </article>
+            </section>
+
+            <section className="admin-section admin-table-section">
+              <article className="admin-card admin-table-card">
+                <div className="admin-card-header">
+                  <h2>Incrições recentes</h2>
+                  <p>Acompanhe os últimos inscritos no evento.</p>
+                </div>
+
+                {loadingSubmissions ? (
+                  <p className="admin-empty">Carregando inscrições do Supabase...</p>
+                ) : fetchError ? (
+                  <p className="admin-empty">{fetchError}</p>
+                ) : submissionsState.length === 0 ? (
+                  <p className="admin-empty">Nenhuma inscrição encontrada ainda.</p>
+                ) : (
+                  <div className="admin-table-wrapper">
+                    <table className="admin-table">
+                      <thead>
+                        <tr>
+                          <th>Nome</th>
+                          <th>Data de Nascimento</th>
+                          <th>Idade</th>
+                          <th>Telefone</th>
+                          <th>Modalidade</th>
+                          <th>Pagamento</th>
                         </tr>
-                      ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-
-          <div className="admin-listing">
-            <div className="admin-listing-header">
-              <h2>Inscrições recentes</h2>
-              <p>As inscrições aparecem aqui assim que são enviadas pelo formulário do site.</p>
-            </div>
-
-            {loadingSubmissions ? (
-              <p className="admin-empty">Carregando inscrições do Supabase...</p>
-            ) : fetchError ? (
-              <p className="admin-empty">{fetchError}</p>
-            ) : submissionsState.length === 0 ? (
-              <p className="admin-empty">Nenhuma inscrição encontrada ainda.</p>
-            ) : (
-              <div className="admin-table-wrapper">
-                <table className="admin-table">
-                  <thead>
-                    <tr>
-                      <th>Nome</th>
-                      <th>Data Nasc.</th>
-                      <th>Idade</th>
-                      <th>Telefone</th>
-                      <th>Percurso</th>
-                      <th>Pagamento</th>
-                      <th>Enviado</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {submissionsState.map((item) => (
-                      <tr key={item.id}>
-                        <td>{item.nome}</td>
-                        <td>{item.dataNascimento}</td>
-                        <td>{item.idade}</td>
-                        <td>{item.telefone}</td>
-                        <td>{item.participacaoConfirmada ? 'Sim' : 'Não'}</td>
-                        <td>{item.paymentMethod}</td>
-                        <td>{new Date(item.submittedAt).toLocaleString('pt-BR')}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-        </>
-      )}
+                      </thead>
+                      <tbody>
+                        {submissionsState.map((item) => (
+                          <tr key={item.id}>
+                            <td>{item.nome}</td>
+                            <td>{item.dataNascimento}</td>
+                            <td>{item.idade}</td>
+                            <td>{item.telefone}</td>
+                            <td>{item.modalidade}</td>
+                            <td>{item.paymentMethod}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </article>
+            </section>
+          </>
+        )}
+      </div>
     </section>
   )
 }

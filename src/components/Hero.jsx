@@ -20,11 +20,11 @@ export default function Hero() {
         <div className="hero-info-row">
           <div className="hero-info-item">
             <span className="icon">📅</span>
-            <span>Em breve — confirme a data</span>
+            <span>05/07 — Caminhada 07:30 / Corrida 08:00</span>
           </div>
           <div className="hero-info-item">
             <span className="icon">📍</span>
-            <span>Local a confirmar</span>
+            <span>Praça da Paróquia e Flona</span>
           </div>
           <div className="hero-info-item">
             <span className="icon">👨‍👩‍👧‍👦</span>

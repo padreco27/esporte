@@ -1,7 +1,250 @@
 .admin-page {
   min-height: 100vh;
-  padding: 9rem 2rem 4rem;
+  padding: 7rem 2rem 4rem;
   background: linear-gradient(180deg, rgba(245,240,232,1) 0%, rgba(236,246,236,1) 100%);
+}
+
+.admin-content {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.admin-section {
+  margin-top: 2rem;
+}
+
+.admin-stats-grid,
+.admin-panel-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.admin-stats-grid {
+  grid-template-columns: repeat(3, minmax(240px, 1fr));
+}
+
+.admin-card--wide {
+  grid-column: 1 / -1;
+}
+
+.admin-card--elevated {
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.08);
+}
+
+.admin-card-header {
+  margin-bottom: 1.25rem;
+}
+
+.admin-card-header h2 {
+  font-size: clamp(1.4rem, 2vw, 1.9rem);
+  margin-bottom: 0.6rem;
+}
+
+.admin-card-header p {
+  margin: 0;
+  color: var(--text-mid);
+  line-height: 1.7;
+}
+
+.stats-card {
+  min-height: 220px;
+}
+
+.stats-card--accent {
+  background: linear-gradient(135deg, var(--green-dark), var(--green-mid));
+  color: var(--white);
+}
+
+.stats-card--accent-light {
+  background: rgba(212, 168, 67, 0.15);
+  color: var(--green-dark);
+}
+
+.admin-card-label {
+  display: inline-flex;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: rgba(212, 168, 67, 0.12);
+  color: var(--green-dark);
+  font-weight: 700;
+}
+
+.admin-stat.large {
+  margin-top: 1rem;
+  font-size: 2.6rem;
+  font-weight: 800;
+}
+
+.admin-table-card {
+  padding-bottom: 1.5rem;
+}
+
+.admin-full-width {
+  width: 100%;
+}
+
+.admin-login-card h2 {
+  margin-bottom: 0.75rem;
+}
+
+.admin-login-card p {
+  margin-bottom: 1.75rem;
+  color: var(--text-mid);
+  line-height: 1.7;
+}
+
+.admin-login-card {
+  position: relative;
+}
+
+.admin-panel-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-field-group {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.admin-card-header {
+  margin-bottom: 1.25rem;
+}
+
+.admin-card-header h2 {
+  margin-bottom: 0.5rem;
+}
+
+.admin-input,
+.admin-file-input,
+.admin-textarea {
+  width: 100%;
+  border: 1px solid rgba(26, 58, 31, 0.16);
+  border-radius: 18px;
+  padding: 0.95rem 1rem;
+  font-size: 1rem;
+  color: var(--text-dark);
+  background: #fdfdf9;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.admin-file-input {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+}
+
+.admin-input:focus,
+.admin-file-input:focus,
+.admin-textarea:focus {
+  outline: none;
+  border-color: var(--green-dark);
+  box-shadow: 0 0 0 3px rgba(26, 58, 31, 0.08);
+}
+
+.admin-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.admin-save-button {
+  margin-top: 1.5rem;
+  padding: 14px 20px;
+  border-radius: 999px;
+  background: var(--green-dark);
+  color: var(--white);
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform 0.2s, background 0.3s;
+}
+
+.admin-save-button:hover:not(:disabled) {
+  background: var(--green-mid);
+  transform: translateY(-1px);
+}
+
+.admin-save-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.admin-settings-message {
+  margin-top: 1rem;
+  color: var(--text-mid);
+  font-weight: 600;
+}
+
+.admin-qr-preview {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-qr-image {
+  max-width: 260px;
+  width: 100%;
+  border-radius: 18px;
+  border: 2px solid rgba(26, 58, 31, 0.12);
+}
+
+.admin-qr-meta {
+  color: var(--text-mid);
+  font-size: 0.95rem;
+}
+
+.admin-stats-grid article,
+.admin-panel-grid article,
+.admin-table-card {
+  min-height: 100%;
+}
+
+.admin-login-panel {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0 3rem;
+}
+
+.admin-login-card {
+  width: min(620px, 100%);
+  padding: 2.5rem;
+}
+
+.admin-login-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-login-button {
+  margin-top: 1rem;
+}
+
+.admin-table-section {
+  margin-top: 2rem;
+}
+
+@media (max-width: 980px) {
+  .admin-stats-grid,
+  .admin-panel-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .admin-page {
+    padding: 6rem 1.2rem 3rem;
+  }
+
+  .admin-hero-card,
+  .admin-login-card,
+  .admin-card,
+  .admin-confirmed,
+  .admin-listing {
+    border-radius: 22px;
+  }
 }
 
 .admin-hero {
@@ -238,6 +481,113 @@
   border-radius: 18px;
   font-weight: 700;
   color: var(--green-dark);
+}
+
+.admin-field-group {
+  margin-top: 1.5rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.admin-field-group label {
+  font-weight: 700;
+  color: var(--green-dark);
+}
+
+.admin-input,
+.admin-file-input,
+.admin-textarea {
+  width: 100%;
+  border: 1px solid rgba(26, 58, 31, 0.16);
+  border-radius: 16px;
+  padding: 0.95rem 1rem;
+  font-size: 1rem;
+  color: var(--text-dark);
+  background: #fdfdf9;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.admin-file-input {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+}
+
+.admin-input:focus,
+.admin-file-input:focus,
+.admin-textarea:focus {
+  outline: none;
+  border-color: var(--green-dark);
+  box-shadow: 0 0 0 3px rgba(26, 58, 31, 0.08);
+}
+
+.admin-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.admin-save-button {
+  margin-top: 1.5rem;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: var(--green-dark);
+  color: var(--white);
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform 0.2s, background 0.3s;
+}
+
+.admin-save-button:hover:not(:disabled) {
+  background: var(--green-mid);
+  transform: translateY(-1px);
+}
+
+.admin-save-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.admin-settings-message {
+  margin-top: 1rem;
+  color: var(--text-mid);
+  font-weight: 600;
+}
+
+.admin-qr-preview {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-qr-image {
+  max-width: 260px;
+  width: 100%;
+  border-radius: 18px;
+  border: 2px solid rgba(26, 58, 31, 0.12);
+}
+
+.admin-qr-meta {
+  color: var(--text-mid);
+  font-size: 0.95rem;
+}
+
+.admin-settings-card {
+  padding-bottom: 2rem;
+}
+
+.admin-payments-grid {
+  margin-top: 1.5rem;
+}
+
+.admin-settings-grid {
+  margin-top: 2rem;
+}
+
+.admin-error,
+.admin-settings-message {
+  max-width: 1120px;
 }
 
 .pix-qr-placeholder {

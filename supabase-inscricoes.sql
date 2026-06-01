@@ -8,10 +8,19 @@ create table if not exists public.inscricoes (
   idade integer not null,
   telefone text not null,
   participacao_confirmada boolean not null default false,
+  modalidade text not null,
   payment_method text not null,
   termos_aceitos boolean not null default false,
   submitted_at timestamptz not null default now()
 );
+
+create table if not exists public.configuracoes (
+  key text primary key,
+  value text not null
+);
+
+alter table public.inscricoes
+  add column if not exists modalidade text not null default 'Caminhada';
 
 -- Habilita Row Level Security (RLS) para proteger a tabela.
 -- DESABILITAR RLS: se houver problemas com políticas, desabilite com:

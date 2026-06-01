@@ -26,14 +26,24 @@ export default function Inscricao({ onSubmit }) {
   const [dataNascimento, setDataNascimento] = useState('')
   const [idade, setIdade] = useState('')
   const [telefone, setTelefone] = useState('')
-  const [participacaoConfirmada, setParticipacaoConfirmada] = useState(false)
+  const [evento, setEvento] = useState('caminhada')
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState('pix')
   const [submitting, setSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [copiedPix, setCopiedPix] = useState(false)
-  const pixKey = 'paroquiaparaopeba@diocesedesetelagoas.com.br'
+  const [caminhadaOptionText, setCaminhadaOptionText] = useState(
+    'Eu participarei da CAMINHADA DA PADROEIRA com percurso de 5 km saindo da praça da Paróquia, indo até o Flona e voltando à praça da Paróquia.'
+  )
+  const [corridaOptionText, setCorridaOptionText] = useState(
+    'Eu participarei da CORRIDA DA PADROEIRA de 100 metros com largada e chegada na praça da Paróquia.'
+  )
+  const [termsText, setTermsText] = useState(
+    'Eu entendo que precisarei pagar R$30,00 no ato da inscrição através de PIX e no dia levar 1 litro de leite.'
+  )
+  const [qrCodeImage, setQrCodeImage] = useState(null)
+  const [pixKey, setPixKey] = useState('paroquiaparaopeba@diocesedesetelagoas.com.br')
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -52,6 +62,32 @@ export default function Inscricao({ onSubmit }) {
     } else {
       console.log('✓ Supabase está disponível para inscrições')
     }
+  }, [])
+
+  useEffect(() => {
+    if (!supabase) return
+
+    const loadFormTexts = async () => {
+      const { data, error } = await supabase
+        .from('configuracoes')
+        .select('key, value')
+        .in('key', ['walkingOptionText', 'runningOptionText', 'termsText', 'qrCodeData', 'pixKey'])
+
+      if (error) {
+        console.warn('Não foi possível carregar textos do formulário:', error)
+        return
+      }
+
+      data?.forEach((item) => {
+        if (item.key === 'walkingOptionText') setCaminhadaOptionText(item.value)
+        if (item.key === 'runningOptionText') setCorridaOptionText(item.value)
+        if (item.key === 'termsText') setTermsText(item.value)
+        if (item.key === 'qrCodeData') setQrCodeImage(item.value)
+        if (item.key === 'pixKey') setPixKey(item.value)
+      })
+    }
+
+    loadFormTexts()
   }, [])
 
   useEffect(() => {
@@ -79,8 +115,8 @@ export default function Inscricao({ onSubmit }) {
       return
     }
 
-    if (!participacaoConfirmada) {
-      setErrorMessage('Confirme sua participação no percurso para continuar.')
+    if (!evento) {
+      setErrorMessage('Selecione se deseja a caminhada ou a corrida.')
       setSuccessMessage('')
       return
     }
@@ -103,7 +139,7 @@ export default function Inscricao({ onSubmit }) {
       data_nascimento: dataNascimento,
       idade,
       telefone,
-      participacao_confirmada: participacaoConfirmada,
+      modalidade: evento === 'caminhada' ? 'Caminhada' : 'Corrida',
       payment_method: paymentMethod === 'pix' ? 'PIX' : 'No dia',
       termos_aceitos: termsAccepted,
       submitted_at: new Date().toISOString(),
@@ -132,7 +168,7 @@ export default function Inscricao({ onSubmit }) {
       dataNascimento,
       idade,
       telefone,
-      participacaoConfirmada,
+      modalidade: evento,
       paymentMethod,
       termsAccepted,
       submittedAt: submission.submitted_at,
@@ -140,13 +176,18 @@ export default function Inscricao({ onSubmit }) {
 
     onSubmit?.(localSubmission)
 
+    const descricaoEvento = evento === 'caminhada'
+      ? caminhadaOptionText
+      : corridaOptionText
+
     const whatsappText = encodeURIComponent(
-      `Nova inscrição Caminhada da Padroeira:\n` +
+      `Nova inscrição Evento da Padroeira:\n` +
       `Nome: ${nome}\n` +
       `Data de Nascimento: ${dataNascimento}\n` +
       `Idade: ${idade}\n` +
       `Telefone: ${telefone}\n` +
-      `Participa do percurso de 5 km: ${participacaoConfirmada ? 'Sim' : 'Não'}\n` +
+      `Modalidade: ${evento === 'caminhada' ? 'Caminhada' : 'Corrida'}\n` +
+      `${descricaoEvento}\n` +
       `Forma de pagamento: ${paymentMethod === 'pix' ? 'PIX' : 'No dia'}\n` +
       `Termos aceitos: Sim`
     )
@@ -157,7 +198,7 @@ export default function Inscricao({ onSubmit }) {
     setDataNascimento('')
     setIdade('')
     setTelefone('')
-    setParticipacaoConfirmada(false)
+    setEvento('caminhada')
     setTermsAccepted(false)
     setPaymentMethod('pix')
     setCopiedPix(false)
@@ -239,14 +280,29 @@ export default function Inscricao({ onSubmit }) {
               </label>
             </div>
 
-            <label className="inscricao-checkbox">
-              <input
-                type="checkbox"
-                checked={participacaoConfirmada}
-                onChange={(e) => setParticipacaoConfirmada(e.target.checked)}
-              />
-              Eu participarei da CAMINHADA DA PADROEIRA com percurso de 5 km saindo da praça da Paróquia, indo até o Flona e voltando à praça da Paróquia.
-            </label>
+            <fieldset className="inscricao-fieldset">
+              <legend>Modalidade*</legend>
+              <label className="inscricao-radio">
+                <input
+                  type="radio"
+                  name="evento"
+                  value="caminhada"
+                  checked={evento === 'caminhada'}
+                  onChange={() => setEvento('caminhada')}
+                />
+                {caminhadaOptionText}
+              </label>
+              <label className="inscricao-radio">
+                <input
+                  type="radio"
+                  name="evento"
+                  value="corrida"
+                  checked={evento === 'corrida'}
+                  onChange={() => setEvento('corrida')}
+                />
+                {corridaOptionText}
+              </label>
+            </fieldset>
 
             <fieldset className="inscricao-fieldset">
               <legend>Forma de pagamento</legend>
@@ -274,25 +330,18 @@ export default function Inscricao({ onSubmit }) {
 
             {paymentMethod === 'pix' && (
               <div className="inscricao-pix-details">
-                <strong>Chave PIX (copiar e colar):</strong>
-                <div className="pix-copy-row">
-                  <input
-                    type="text"
-                    readOnly
-                    value={pixKey}
-                    className="pix-copy-input"
-                    aria-label="Chave PIX para copiar"
-                  />
-                  <button
-                    type="button"
-                    className="pix-copy-button"
-                    onClick={handleCopyPix}
-                  >
-                    {copiedPix ? 'Copiado!' : 'Copiar'}
-                  </button>
-                </div>
-                <p className="pix-copy-note">Use copiar e colar no seu app de banco ou carteira digital.</p>
-                <div className="pix-qr-placeholder">QR CODE</div>
+                <button
+                  type="button"
+                  className="pix-copy-button"
+                  onClick={handleCopyPix}
+                >
+                  {copiedPix ? 'Copiado!' : 'PIX Copia e Cola'}
+                </button>
+                {qrCodeImage ? (
+                  <img src={qrCodeImage} alt="QR Code PIX" className="pix-qr-image" />
+                ) : (
+                  <div className="pix-qr-placeholder">QR CODE</div>
+                )}
               </div>
             )}
 
@@ -302,7 +351,7 @@ export default function Inscricao({ onSubmit }) {
                 checked={termsAccepted}
                 onChange={(e) => setTermsAccepted(e.target.checked)}
               />
-              Eu entendo que precisarei pagar R$30,00 no ato da inscrição através de PIX e no dia levar 1 litro de leite.
+              {termsText}
             </label>
 
             <button type="submit" className="inscricao-submit" disabled={submitting}>
