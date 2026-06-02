@@ -51,7 +51,7 @@ export default function Atividades() {
           </div>
 
           <div className="atividade-card reveal" ref={addRef} style={{ transitionDelay: '0.25s' }}>
-            <img className="atividade-img" src={corridaImg} alt="Corrida de 100 metros" />
+            <img className="atividade-img" src={corridaImg} alt="Corrida de 5 quilômetros" />
             <div className="atividade-body">
               <div className="atividade-emoji">⚡</div>
               <h3 className="atividade-title">Corrida de 5 quilômetros</h3>

@@ -44,7 +44,7 @@ export default function About() {
             <p className="section-desc">
               A <strong>Caminhada Ecológica da Padroeira</strong> é um evento que une espiritualidade,
               natureza e esporte em uma experiência inesquecível. Venha caminhar por trilhas
-              preservadas, respirar ar puro e ainda disputar a emocionante Corrida de 100 metros!
+              preservadas, respirar ar puro e ainda disputar a emocionante Corrida de 5 quilômetros!
             </p>
             <p className="section-desc" style={{ marginTop: '1rem' }}>
               Um evento para toda a família, com atividades para todas as idades e condicionamentos físicos.
