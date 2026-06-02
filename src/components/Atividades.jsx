@@ -54,13 +54,12 @@ export default function Atividades() {
             <img className="atividade-img" src={corridaImg} alt="Corrida de 100 metros" />
             <div className="atividade-body">
               <div className="atividade-emoji">⚡</div>
-              <h3 className="atividade-title">Corrida de 100 Metros</h3>
+              <h3 className="atividade-title">Corrida de 5 quilômetros</h3>
               <p className="atividade-desc">
-                Mostre sua velocidade na emocionante Corrida de 100 metros! Uma disputa rápida, 
-                intensa e cheia de adrenalina. Categorias por faixa etária para uma competição justa.
+                Mostre sua velocidade na emocionante Corrida de 5 quilômetros! Uma disputa rápida, 
+                intensa e cheia de adrenalina.
               </p>
               <div className="atividade-details">
-                <div className="atividade-detail">⚡ Categorias por faixa etária</div>
                 <div className="atividade-detail">🏆 Premiação para os vencedores</div>
                 <div className="atividade-detail">📸 Cronometragem e registro fotográfico</div>
               </div>

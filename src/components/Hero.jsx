@@ -15,7 +15,7 @@ export default function Hero() {
         </h1>
         <p className="hero-subtitle">
           Uma experiência única em plena natureza —<br />
-          Caminhada ecológica &amp; Corrida de 100 metros
+          Caminhada ecológica &amp; Corrida de 5 quilômetros
         </p>
         <div className="hero-info-row">
           <div className="hero-info-item">
@@ -24,7 +24,7 @@ export default function Hero() {
           </div>
           <div className="hero-info-item">
             <span className="icon">📍</span>
-            <span>Praça da Paróquia e Flona</span>
+            <span>Largada e termino ao lado da Igreja Matriz</span>
           </div>
           <div className="hero-info-item">
             <span className="icon">👨‍👩‍👧‍👦</span>

@@ -34,10 +34,10 @@ export default function Inscricao({ onSubmit }) {
   const [errorMessage, setErrorMessage] = useState('')
   const [copiedPix, setCopiedPix] = useState(false)
   const [caminhadaOptionText, setCaminhadaOptionText] = useState(
-    'Eu participarei da CAMINHADA DA PADROEIRA com percurso de 5 km saindo da praça da Paróquia, indo até o Flona e voltando à praça da Paróquia.'
+    'Eu participarei da CAMINHADA DA PADROEIRA saindo ao lado da Igreja Matriz, indo até o Flona e voltando ao lado da Igreja Matriz.'
   )
   const [corridaOptionText, setCorridaOptionText] = useState(
-    'Eu participarei da CORRIDA DA PADROEIRA de 100 metros com largada e chegada na praça da Paróquia.'
+    'Eu participarei da CORRIDA DA PADROEIRA de 5 quilômetros com largada e chegada ao lado da Igreja Matriz.'
   )
   const [termsText, setTermsText] = useState(
     'Eu entendo que precisarei pagar R$30,00 no ato da inscrição através de PIX e no dia levar 1 litro de leite.'
