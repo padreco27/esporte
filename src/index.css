@@ -34,6 +34,16 @@ body {
   color: var(--text-dark);
 }
 
+main {
+  padding-top: 5.5rem;
+}
+
+@media (max-width: 768px) {
+  main {
+    padding-top: 7rem;
+  }
+}
+
 @keyframes fadeInDown {
   from { opacity: 0; transform: translateY(-20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -43,6 +53,7 @@ body {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
 
 @keyframes bounce {
   0%, 100% { transform: translateX(-50%) translateY(0); }
@@ -63,4 +74,46 @@ body {
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.instagram-creator-banner {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 1.25rem 0;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.instagram-button,
+.footer-instagram-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.2rem;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 700;
+  transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+
+.instagram-button {
+  background: var(--green-dark);
+  color: var(--white);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.instagram-button:hover {
+  transform: translateY(-2px);
+  background: var(--green-mid);
+}
+
+.footer-instagram-button {
+  margin: 1rem auto 0;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.footer-instagram-button:hover {
+  background: rgba(255, 255, 255, 0.18);
 }

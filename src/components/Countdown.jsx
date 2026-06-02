@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import './Countdown.css'
 
 // ⚠️ Atualize aqui a data do evento!
-const EVENT_DATE = new Date('2026-08-15T08:00:00')
+const EVENT_DATE = new Date('2026-05-05T08:08:00')
 
 function pad(n) {
   return String(n).padStart(2, '0')

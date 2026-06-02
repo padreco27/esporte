@@ -23,9 +23,21 @@ export default function Navbar({ onAdminClick }) {
         <li><a href="#atividades">Atividades</a></li>
         <li><a href="#inscricao" className="nav-cta">Inscreva-se</a></li>
       </ul>
-      <button type="button" className="nav-admin" onClick={onAdminClick} aria-label="Abrir painel administrativo">
-        <span className="nav-admin-icon">⚙️</span>
-      </button>
+      <div className="nav-actions">
+        <a
+          href="https://instagram.com/presenca__pro"
+          target="_blank"
+          rel="noreferrer"
+          className="nav-instagram"
+          aria-label="Instagram dos criadores do site"
+        >
+          <span className="nav-instagram-icon">📸</span>
+          <span className="nav-instagram-text">Instagram</span>
+        </a>
+        <button type="button" className="nav-admin" onClick={onAdminClick} aria-label="Abrir painel administrativo">
+          <span className="nav-admin-icon">⚙️</span>
+        </button>
+      </div>
     </nav>
   )
 }

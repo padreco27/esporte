@@ -9,13 +9,16 @@
   align-items: center;
   justify-content: space-between;
   transition: all 0.4s ease;
+  background: rgba(19, 39, 23, 0.95);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 .navbar.scrolled {
-  background: rgba(26, 58, 31, 0.97);
-  backdrop-filter: blur(12px);
+  background: rgba(19, 39, 23, 0.98);
+  backdrop-filter: blur(16px);
   padding: 0.7rem 2rem;
-  box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 30px rgba(0,0,0,0.35);
 }
 
 .nav-logo {
@@ -90,6 +93,44 @@
   font-size: 1.1rem;
 }
 
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-instagram {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  background: rgba(255, 255, 255, 0.14);
+  color: rgba(255, 255, 255, 0.95);
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.nav-instagram:hover {
+  background: rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+}
+
+.nav-instagram-icon {
+  font-size: 1rem;
+}
+
 @media (max-width: 768px) {
   .nav-links { display: none; }
+
+  .nav-instagram {
+    padding: 0.5rem;
+  }
+
+  .nav-instagram-text {
+    display: none;
+  }
 }
