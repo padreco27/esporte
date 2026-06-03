@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import './Atividades.css'
 import caminhadaImg from '../assets/hero_caminhada.png'
-import corridaImg from '../assets/corrida_100m.png'
+import corridaImg from '../assets/corrida_nova.jpg'
 
 export default function Atividades() {
   const revealRefs = useRef([])
