@@ -56,12 +56,11 @@ export default function Atividades() {
               <div className="atividade-emoji">⚡</div>
               <h3 className="atividade-title">Corrida de 5 quilômetros</h3>
               <p className="atividade-desc">
-                Mostre sua velocidade na emocionante Corrida de 5 quilômetros! Uma disputa rápida, 
-                intensa e cheia de adrenalina.
+                Participe da Corrida de 5 Quilômetros e aproveite uma experiência agradável ao ar livre. Um percurso ideal para quem busca se exercitar, desafiar seus limites e curtir o momento em um ambiente de esporte e bem-estar.
               </p>
               <div className="atividade-details">
-                <div className="atividade-detail">🏆 Premiação para os vencedores</div>
-                <div className="atividade-detail">📸 Cronometragem e registro fotográfico</div>
+                <div className="atividade-detail">🏆 Premiação para todos os participantes</div>
+                <div className="atividade-detail">✅ Mesa de frutas e hidratação durante o percurso. </div>
               </div>
             </div>
           </div>

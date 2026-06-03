@@ -9,7 +9,7 @@ export default function Hero() {
       <div className="hero-content">
         <div className="hero-badge">🌿 Evento da Padroeira</div>
         <h1 className="hero-title">
-          Caminhada<br />
+          Caminhada e Corrida<br />
           <span className="highlight">Ecológica</span><br />
           da Padroeira
         </h1>
