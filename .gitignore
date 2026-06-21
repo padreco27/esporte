@@ -1,3 +1,4 @@
+# verificar se esta tudo certo com o gitignore
 node_modules
 dist
 .env
