@@ -11,7 +11,7 @@ export default function Admin({ onBack, submissions = [] }) {
   const [submissionsState, setSubmissionsState] = useState(submissions)
   const [loadingSubmissions, setLoadingSubmissions] = useState(false)
   const [fetchError, setFetchError] = useState('')
-  const [pixValue, setPixValue] = useState(20)
+  const pixValue = 30
   const [pixKey, setPixKey] = useState('paroquiaparaopeba@diocesedesetelagoas.com.br')
   const [qrCodeImage, setQrCodeImage] = useState(null)
   const [qrCodePreview, setQrCodePreview] = useState('')
@@ -209,7 +209,6 @@ export default function Admin({ onBack, submissions = [] }) {
 
   const totalSubmissions = submissionsState.length
   const pixCount = submissionsState.filter((item) => item.paymentMethod === 'PIX').length
-  const onDayCount = submissionsState.filter((item) => item.paymentMethod === 'No dia').length
 
   return (
     <section className="admin-page">
@@ -289,12 +288,6 @@ export default function Admin({ onBack, submissions = [] }) {
                   <div className="admin-stat large">{pixCount}</div>
                   <p>Participantes que escolheram o pagamento via PIX.</p>
                 </article>
-
-                <article className="admin-card stats-card stats-card--accent-light">
-                  <span className="admin-card-label">Pagamento no dia</span>
-                  <div className="admin-stat large">{onDayCount}</div>
-                  <p>Participantes que pagarão diretamente no evento.</p>
-                </article>
               </div>
             </section>
 
@@ -302,20 +295,12 @@ export default function Admin({ onBack, submissions = [] }) {
               <article className="admin-card admin-panel-card admin-card--wide">
                 <div className="admin-card-header">
                   <h2>Pagamento por PIX</h2>
-                  <p>Atualize o valor e o QR Code que aparecem no formulário.</p>
+                  <p>O valor do PIX está fixo em R$30,00 e o QR Code aparece no formulário.</p>
                 </div>
 
                 <div className="admin-field-group">
-                  <label htmlFor="pix-value">Valor do PIX (R$)</label>
-                  <input
-                    id="pix-value"
-                    type="number"
-                    value={pixValue}
-                    onChange={(e) => setPixValue(Math.max(0, parseFloat(e.target.value) || 0))}
-                    step="0.01"
-                    min="0"
-                    className="admin-input"
-                  />
+                  <label>Valor do PIX (R$)</label>
+                  <div className="admin-input admin-fixed-value">R$ 30,00</div>
                 </div>
 
                 <div className="admin-field-group">

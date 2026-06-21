@@ -28,7 +28,6 @@ export default function Inscricao({ onSubmit }) {
   const [telefone, setTelefone] = useState('')
   const [evento, setEvento] = useState('caminhada')
   const [termsAccepted, setTermsAccepted] = useState(false)
-  const [paymentMethod, setPaymentMethod] = useState('pix')
   const [submitting, setSubmitting] = useState(false)
   const [successMessage, setSuccessMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
@@ -140,7 +139,7 @@ export default function Inscricao({ onSubmit }) {
       idade,
       telefone,
       modalidade: evento === 'caminhada' ? 'Caminhada' : 'Corrida',
-      payment_method: paymentMethod === 'pix' ? 'PIX' : 'No dia',
+      payment_method: 'PIX',
       termos_aceitos: termsAccepted,
       submitted_at: new Date().toISOString(),
     }
@@ -188,7 +187,7 @@ export default function Inscricao({ onSubmit }) {
       `Telefone: ${telefone}\n` +
       `Modalidade: ${evento === 'caminhada' ? 'Caminhada' : 'Corrida'}\n` +
       `${descricaoEvento}\n` +
-      `Forma de pagamento: ${paymentMethod === 'pix' ? 'PIX' : 'No dia'}\n` +
+      'Forma de pagamento: PIX\n' +
       `Termos aceitos: Sim`
     )
 
@@ -200,7 +199,6 @@ export default function Inscricao({ onSubmit }) {
     setTelefone('')
     setEvento('caminhada')
     setTermsAccepted(false)
-    setPaymentMethod('pix')
     setCopiedPix(false)
 
     setTimeout(() => {
@@ -306,44 +304,25 @@ export default function Inscricao({ onSubmit }) {
 
             <fieldset className="inscricao-fieldset">
               <legend>Forma de pagamento</legend>
-              <label className="inscricao-radio">
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="pix"
-                  checked={paymentMethod === 'pix'}
-                  onChange={() => setPaymentMethod('pix')}
-                />
-                Pagar por PIX (QR code e chave PIX)
-              </label>
-              <label className="inscricao-radio">
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value="dia"
-                  checked={paymentMethod === 'dia'}
-                  onChange={() => setPaymentMethod('dia')}
-                />
-                Pagar no dia da corrida
-              </label>
+              <div className="inscricao-radio">
+                Pagamento exclusivamente via PIX no valor de R$30,00.
+              </div>
             </fieldset>
 
-            {paymentMethod === 'pix' && (
-              <div className="inscricao-pix-details">
-                <button
-                  type="button"
-                  className="pix-copy-button"
-                  onClick={handleCopyPix}
-                >
-                  {copiedPix ? 'Copiado!' : 'PIX Copia e Cola'}
-                </button>
-                {qrCodeImage ? (
-                  <img src={qrCodeImage} alt="QR Code PIX" className="pix-qr-image" />
-                ) : (
-                  <div className="pix-qr-placeholder">QR CODE</div>
-                )}
-              </div>
-            )}
+            <div className="inscricao-pix-details">
+              <button
+                type="button"
+                className="pix-copy-button"
+                onClick={handleCopyPix}
+              >
+                {copiedPix ? 'Copiado!' : 'PIX Copia e Cola'}
+              </button>
+              {qrCodeImage ? (
+                <img src={qrCodeImage} alt="QR Code PIX" className="pix-qr-image" />
+              ) : (
+                <div className="pix-qr-placeholder">QR CODE</div>
+              )}
+            </div>
 
             <label className="inscricao-checkbox">
               <input
