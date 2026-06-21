@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { supabase } from '../lib/supabaseClient'
+import { supabase, supabaseConfigMessage } from '../lib/supabaseClient'
 import './Admin.css'
 
 export default function Admin({ onBack, submissions = [] }) {
@@ -33,7 +33,7 @@ export default function Admin({ onBack, submissions = [] }) {
     console.log('Env Key:', import.meta.env.VITE_SUPABASE_ANON_KEY)
 
     if (!supabase) {
-      const debugMsg = `Supabase não configurado. URL: ${import.meta.env.VITE_SUPABASE_URL}, Key: ${import.meta.env.VITE_SUPABASE_ANON_KEY ? 'existe' : 'não existe'}`
+      const debugMsg = supabaseConfigMessage || `Supabase não configurado. URL: ${import.meta.env.VITE_SUPABASE_URL}, Key: ${import.meta.env.VITE_SUPABASE_ANON_KEY ? 'existe' : 'não existe'}`
       console.error(debugMsg)
       setMessage(debugMsg)
       return
@@ -120,7 +120,7 @@ export default function Admin({ onBack, submissions = [] }) {
     event.preventDefault()
 
     if (!supabase) {
-      setMessage('Supabase não está configurado. Verifique o arquivo .env.')
+      setMessage(supabaseConfigMessage || 'Supabase não está configurado. Verifique o arquivo .env.')
       return
     }
 
