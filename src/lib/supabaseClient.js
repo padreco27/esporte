@@ -33,14 +33,14 @@ export const supabaseConfigMessage = (() => {
   if (supabaseConfigured) return ''
 
   if (missingFields.length > 0) {
-    return `Supabase não está configurado. Verifique o arquivo .env e defina: ${missingFields.join(', ')}`
+    return `Supabase não está configurado. Defina no ambiente do Vercel ou no arquivo .env local: ${missingFields.join(', ')}`
   }
 
   if (!supabaseUrlIsValid) {
-    return 'Supabase não está configurado corretamente. Verifique se VITE_SUPABASE_URL aponta para uma URL válida do Supabase.'
+    return 'Supabase não está configurado corretamente. Verifique se VITE_SUPABASE_URL aponta para uma URL válida do Supabase e redeploy no Vercel.'
   }
 
-  return 'Supabase não está configurado. Verifique o arquivo .env.'
+  return 'Supabase não está configurado. Verifique as variáveis do ambiente no Vercel ou o arquivo .env local.'
 })()
 
 if (!supabaseConfigured) {
