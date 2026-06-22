@@ -25,11 +25,19 @@ function App() {
     setSubmissions((prev) => [submission, ...prev])
   }
 
+  const handleDeleteSubmission = (submissionId) => {
+    setSubmissions((prev) => prev.filter((item) => item.id !== submissionId))
+  }
+
   return (
     <>
       <Navbar onAdminClick={() => setIsAdminPage(true)} />
       {isAdminPage ? (
-        <Admin onBack={() => setIsAdminPage(false)} submissions={submissions} />
+        <Admin
+          onBack={() => setIsAdminPage(false)}
+          submissions={submissions}
+          onDeleteSubmission={handleDeleteSubmission}
+        />
       ) : (
         <main>
           <Hero />

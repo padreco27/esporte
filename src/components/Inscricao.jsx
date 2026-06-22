@@ -129,70 +129,69 @@ export default function Inscricao({ onSubmit }) {
     if (!supabase) {
       setErrorMessage('Supabase não configurado. A inscrição não pode ser salva na nuvem no momento.')
       setSuccessMessage('')
-      return
     }
 
     setSubmitting(true)
+    const modalidade = evento === 'caminhada' ? 'Caminhada' : 'Corrida'
+    const descricaoEvento = evento === 'caminhada'
+      ? caminhadaOptionText
+      : corridaOptionText
+    const whatsappUrl = `https://wa.me/553137141018?text=${encodeURIComponent(
+      `Nova inscrição Evento da Padroeira:\n` +
+      `Nome: ${nome}\n` +
+      `Data de Nascimento: ${dataNascimento}\n` +
+      `Idade: ${idade}\n` +
+      `Telefone: ${telefone}\n` +
+      `Modalidade: ${modalidade}\n` +
+      `${descricaoEvento}\n` +
+      'Forma de pagamento: PIX\n' +
+      `Termos aceitos: Sim`
+    )}`
     const submission = {
       nome,
       data_nascimento: dataNascimento,
       idade,
       telefone,
-      modalidade: evento === 'caminhada' ? 'Caminhada' : 'Corrida',
+      modalidade,
       payment_method: 'PIX',
       termos_aceitos: termsAccepted,
       submitted_at: new Date().toISOString(),
     }
 
-    const { data, error } = await supabase
-      .from('inscricoes')
-      .insert([submission])
-      .select()
+    let saved = null
 
-    if (error) {
-      console.error('Erro ao salvar inscrição no Supabase:', error)
-      const errorMsg = error.message || 'Erro desconhecido'
-      const errorCode = error.code || ''
-      const detailedMessage = `Erro: ${errorMsg}${errorCode ? ` (${errorCode})` : ''}`
-      setErrorMessage(`Não foi possível salvar a inscrição. ${detailedMessage}`)
-      setSuccessMessage('')
-      setSubmitting(false)
-      return
+    if (supabase) {
+      const { data, error } = await supabase
+        .from('inscricoes')
+        .insert([submission])
+        .select()
+
+      if (error) {
+        console.error('Erro ao salvar inscrição no Supabase:', error)
+        const errorMsg = error.message || 'Erro desconhecido'
+        const errorCode = error.code || ''
+        const detailedMessage = `Erro: ${errorMsg}${errorCode ? ` (${errorCode})` : ''}`
+        setErrorMessage(`A inscrição foi preparada para o WhatsApp, mas não foi possível salvar no Supabase. ${detailedMessage}`)
+      } else {
+        saved = data?.[0]
+      }
     }
 
-    const saved = data?.[0]
     const localSubmission = {
       id: saved?.id ?? Date.now(),
       nome,
       dataNascimento,
       idade,
       telefone,
-      modalidade: evento,
-      paymentMethod,
+      modalidade,
+      paymentMethod: 'PIX',
       termsAccepted,
       submittedAt: submission.submitted_at,
     }
 
     onSubmit?.(localSubmission)
 
-    const descricaoEvento = evento === 'caminhada'
-      ? caminhadaOptionText
-      : corridaOptionText
-
-    const whatsappText = encodeURIComponent(
-      `Nova inscrição Evento da Padroeira:\n` +
-      `Nome: ${nome}\n` +
-      `Data de Nascimento: ${dataNascimento}\n` +
-      `Idade: ${idade}\n` +
-      `Telefone: ${telefone}\n` +
-      `Modalidade: ${evento === 'caminhada' ? 'Caminhada' : 'Corrida'}\n` +
-      `${descricaoEvento}\n` +
-      'Forma de pagamento: PIX\n' +
-      `Termos aceitos: Sim`
-    )
-
     setSuccessMessage('Inscrição registrada! Abrindo WhatsApp para confirmação automática...')
-    setErrorMessage('')
     setNome('')
     setDataNascimento('')
     setIdade('')
@@ -201,13 +200,8 @@ export default function Inscricao({ onSubmit }) {
     setTermsAccepted(false)
     setCopiedPix(false)
 
-    setTimeout(() => {
-      window.open(
-        `https://wa.me/553137141018?text=${whatsappText}`,
-        '_blank'
-      )
-      setSubmitting(false)
-    }, 150)
+    window.location.assign(whatsappUrl)
+    setSubmitting(false)
   }
 
   const handleCopyPix = async () => {

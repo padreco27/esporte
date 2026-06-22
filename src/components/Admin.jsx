@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase, supabaseConfigMessage } from '../lib/supabaseClient'
 import './Admin.css'
 
-export default function Admin({ onBack, submissions = [] }) {
+export default function Admin({ onBack, submissions = [], onDeleteSubmission }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -205,6 +205,32 @@ export default function Admin({ onBack, submissions = [] }) {
     }
 
     setSavingSettings(false)
+  }
+
+  const handleDeleteSubmission = async (submissionId) => {
+    const shouldDelete = window.confirm('Tem certeza que deseja remover esta inscrição?')
+    if (!shouldDelete) return
+
+    if (!supabase) {
+      setFetchError('Supabase não está configurado. Não foi possível remover a inscrição.')
+      return
+    }
+
+    setFetchError('')
+
+    const { error } = await supabase
+      .from('inscricoes')
+      .delete()
+      .eq('id', submissionId)
+
+    if (error) {
+      console.error('Erro ao remover inscrição:', error)
+      setFetchError(`Não foi possível remover a inscrição. ${error.message}`)
+      return
+    }
+
+    setSubmissionsState((current) => current.filter((item) => item.id !== submissionId))
+    onDeleteSubmission?.(submissionId)
   }
 
   const totalSubmissions = submissionsState.length
@@ -413,6 +439,7 @@ export default function Admin({ onBack, submissions = [] }) {
                           <th>Telefone</th>
                           <th>Modalidade</th>
                           <th>Pagamento</th>
+                          <th>Ações</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -424,6 +451,17 @@ export default function Admin({ onBack, submissions = [] }) {
                             <td>{item.telefone}</td>
                             <td>{item.modalidade}</td>
                             <td>{item.paymentMethod}</td>
+                            <td>
+                              <button
+                                type="button"
+                                className="admin-delete-button"
+                                onClick={() => handleDeleteSubmission(item.id)}
+                                aria-label={`Remover inscrição de ${item.nome}`}
+                                title="Remover inscrição"
+                              >
+                                ×
+                              </button>
+                            </td>
                           </tr>
                         ))}
                       </tbody>
